@@ -263,6 +263,8 @@ function printReceipt() {
 }
 
 function resetForm() {
+    const tbody = document.getElementById('receipt-rows-container');
+    const errorBanner = document.getElementById('validation-error');
     errorBanner.classList.add('hidden');
     tbody.innerHTML = '';
     document.getElementById('customer-name').value = "";
