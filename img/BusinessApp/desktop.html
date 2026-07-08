@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Business App</title>
+    <link rel="stylesheet" href="utilities.css" />
+    <link rel="stylesheet" href="style.css"/>
+  </head>
+  <body>
+    <div class="header">
+      <div class="date">Saturday 14/05/2026</div>
+    </div>
+    <div class="wrapper">
+      <div class="menu">
+        <div class="nav">
+          <div class="menu-item active" id="dashboard" onclick="loadTabContent('dashboard',this)">
+            <div class="icon"><img src="img/Home.png" alt="" /></div>
+            <h3>Dashboard</h3>
+          </div>
+          <div class="menu-item" id="receipt" onclick="loadTabContent('receipt',this)">
+            <div class="icon"><img src="img/Library books.png" alt="" /></div>
+            <h3>Receipt</h3>
+          </div>
+          <div class="menu-item" id="orders" onclick="loadTabContent('orders',this)">
+            <div class="icon">
+              <img src="img/MoneyWavy.png" alt="MoneyWavy" />
+            </div>
+            <h3>Orders</h3>
+          </div>
+          <div class="menu-item" id="stock" onclick="loadTabContent('stock',this)">
+            <div class="icon">
+              <img src="img/Add shopping cart.png" alt="Stock-photo" />
+            </div>
+            <h3>Stock</h3>
+          </div>
+          <div class="menu-item" id="items" onclick="loadTabContent('items',this)">
+            <div class="icon"><img src="img/Equalizer.png" alt="" /></div>
+            <h3>Items</h3>
+          </div>
+        </div>
+        <div class="buttom-nav">
+          <div class="menu-item" id="settings" onclick="loadTabContent('settings',this)">
+            <div class="icon"><img src="img/Build circle.png" alt="" /></div>
+            <h3>Settings</h3>
+          </div>
+          <div class="menu-item" id="logout" onclick="">
+            <div class="icon"><img src="img/Logout.png" alt="" /></div>
+            <h3>Logout</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="board">
+
+      </div>
+    </div>
+    
+   <script src="script.js"></script>
+  </body>
+</html>

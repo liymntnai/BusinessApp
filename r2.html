@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Receipt Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* Hidden from screen view entirely */
+        #printable-receipt-slip {
+            display: none;
+        }
+
+        /* Print Media styling for a standard thermal customer receipt */
+        @media print {
+            .dashboard-screen {
+                display: none !important;
+            }
+
+            #printable-receipt-slip {
+                display: block !important;
+                font-family: 'Courier New', Courier, monospace;
+                background: #ffffff;
+                color: #000000;
+                width: 100%;
+                max-width: 320px;
+                margin: 0 auto;
+                padding: 10px;
+                font-size: 13px;
+                line-height: 1.4;
+            }
+            
+            .receipt-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+
+            .dashed-divider {
+                border-bottom: 1px dashed #000;
+                margin: 8px 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 font-sans min-h-screen flex flex-col m-0 p-0 select-none">
+
+    <!-- ================================================================= -->
+    <!-- SCREEN INTERFACE: Matches screencapture-127-0-0-1-5500-desktop-html-2026-07-03-23_32_01_2.png -->
+    <!-- ================================================================= -->
+    <div class="dashboard-screen flex flex-col flex-1 min-h-screen">
+        
+        <!-- Top Green Utilities Header Bar -->
+        <div class="bg-[#42b873] text-white text-xs px-6 py-2.5 font-medium">
+            Saturday 14/05/2026
+        </div>
+
+        <div class="flex flex-1">
+            <!-- Left Navigation Sidebar panel -->
+            <aside class="w-64 bg-[#edf9f1]/40 border-r border-slate-100 flex flex-col justify-between p-4 min-h-[calc(100vh-38px)] shrink-0">
+                <div class="space-y-1">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-[#edf9f1] rounded-lg text-sm transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        Dashboard
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 bg-[#42b873] text-white rounded-xl text-sm font-medium shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Receipt
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-[#edf9f1] rounded-lg text-sm transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        Orders
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-[#edf9f1] rounded-lg text-sm transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                        Stock
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-[#edf9f1] rounded-lg text-sm transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                        Items
+                    </a>
+                </div>
+
+                <div class="space-y-1 pt-4 border-t border-slate-100">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-[#edf9f1] rounded-lg text-sm transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                        Settings
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-red-50 rounded-lg text-sm transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        Logout
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Workspace View Content Layout -->
+            <main class="flex-1 p-8">
+                <h1 class="text-3xl font-light text-slate-800 mb-6">New Receipt</h1>
+
+                <!-- Error Warning Notification banner -->
+                <div id="validation-alert" class="hidden mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm font-medium"></div>
+
+                <!-- Input Grid Management Table Container -->
+                <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 mb-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse table-fixed min-w-[850px]">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-xs font-semibold text-slate-600 tracking-wider">
+                                    <th class="py-3 px-2 w-[110px]">Actions</th>
+                                    <th class="py-3 px-2 w-[140px]">PID</th>
+                                    <th class="py-3 px-2 w-[180px]">Item Name</th>
+                                    <th class="py-3 px-2 w-[160px]">Description</th>
+                                    <th class="py-3 px-2 w-[120px]">Qty</th>
+                                    <th class="py-3 px-2 w-[120px]">UP</th>
+                                    <th class="py-3 px-2 text-right w-[140px]">Total(XAF)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receipt-table-body">
+                                <!-- Programmatically mapped rows populate here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Row alignment for Total Summary line row block -->
+                    <div class="border-t border-slate-200 mt-4 pt-4 flex justify-between items-center font-bold text-slate-900">
+                        <span class="text-sm tracking-wide text-slate-700 pl-2">Total</span>
+                        <span class="text-base text-right pr-2"><span id="ui-grand-total">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Customer specification element input container -->
+                <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 mb-12 max-w-sm">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                        <span class="text-red-500">*</span> Customer Name
+                    </label>
+                    <input type="text" id="customer-name" placeholder="e.g. Mengue Frederick" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#42b873]/20 focus:border-[#42b873] transition-all">
+                </div>
+
+                <!-- Action Operations Buttons Footer -->
+                <div class="flex justify-between items-center pt-6 border-t border-slate-200">
+                    <button onclick="handleReceiptPrintAction()" class="bg-[#0b291b] hover:bg-[#071d13] text-white font-medium px-5 py-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-sm shadow-sm transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Print receipt
+                    </button>
+                    <button onclick="resetWorkspaceState()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">
+                        Cancel
+                    </button>
+                </div>
+
+                
+            </main>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- PRINT-ONLY CUSTOMER RECEIPT LAYOUT                                -->
+    <!-- ================================================================= -->
+    <div id="printable-receipt-slip">
+        <div style="text-align: center; margin-bottom: 12px;">
+            <h2 style="font-size: 16px; font-weight: bold; margin: 0; text-transform: uppercase;">MARKET OUTLET</h2>
+            <p style="margin: 2px 0; font-size: 11px; color: #333;">100 Business Supply Chain Rd</p>
+            <p style="margin: 1px 0; font-size: 11px; color: #333;">Tel: (237) 612-345-678</p>
+            <p style="margin: 8px 0 0 0; font-weight: bold; font-size: 12px; border-bottom: 1px dashed #000; padding-bottom: 4px;">CASH SALE RECEIPT</p>
+        </div>
+
+        <div class="receipt-row"><span>Date:</span><span id="slip-date">14/05/2026</span></div>
+        <div class="receipt-row"><span>Customer:</span><span id="slip-customer" style="font-weight: bold;">—</span></div>
+        <div class="dashed-divider"></div>
+
+        <!-- Header items align headers well -->
+        <div style="font-weight: bold; display: flex; margin-bottom: 4px; font-size: 11px;">
+            <span style="flex: 2; text-align: left;">Item Description</span>
+            <span style="flex: 1; text-align: center;">Qty x UP</span>
+            <span style="flex: 1; text-align: right;">Total</span>
+        </div>
+        
+        <!-- Dynamic print line contents mapping loop -->
+        <div id="slip-items-box" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        
+        <div class="dashed-divider"></div>
+        <div class="receipt-row" style="font-size: 14px; font-weight: bold;">
+            <span>TOTAL AMOUNT DUE:</span>
+            <span>XAF <span id="slip-grand-total">0</span></span>
+        </div>
+
+        <div style="text-align: center; margin-top: 25px; padding-top: 10px; border-top: 1px dashed #000;">
+            <p style="font-weight: bold; margin: 0; font-size: 11px;">THANK YOU FOR YOUR PATRONAGE!</p>
+            <p style="font-size: 10px; color: #444; margin: 2px 0 0 0;">Items processed correctly cannot be returned.</p>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- JAVASCRIPT LOGIC CONTROLLER                                       -->
+    <!-- ================================================================= -->
+    <script>
+        // Mock Database Store Library
+        const globalProductDatabase = {
+            "RdCn": { name: "Red Corn", desc: "bag", up: 4000 },
+            "WhCn": { name: "White Corn", desc: "bag", up: 4200 },
+            "YlCn": { name: "Yellow Corn", desc: "bag", up: 3800 },
+            "SgBr": { name: "Sugar Brown", desc: "kg", up: 800 }
+        };
+
+        const tBodyContainer = document.getElementById('receipt-table-body');
+        const grandTotalUI = document.getElementById('ui-grand-total');
+        const validationAlertEl = document.getElementById('validation-alert');
+
+        function formatDisplayNumbers(number) {
+            return new Intl.NumberFormat('en-US').format(number);
+        }
+
+        window.onload = () => {
+            // Fields are initialized empty by default as required
+            addNewRow();
+        };
+
+        // Appends new dynamic interactive table lines accurately aligned
+        function addNewRow() {
+            const rowId = 'row_' + Math.random().toString(36).substr(2, 9);
+            const trElement = document.createElement('tr');
+            trElement.id = rowId;
+            trElement.className = "border-b border-slate-100 text-sm align-middle text-slate-800 font-medium";
+
+            let selectionMarkupOptions = `<option value="" selected disabled>Select PID</option>`;
+            for (let pidKey in globalProductDatabase) {
+                selectionMarkupOptions += `<option value="${pidKey}">${pidKey}</option>`;
+            }
+
+            trElement.innerHTML = `
+                <td class="py-4 px-2 flex items-center gap-1.5">
+                    <button onclick="addNewRow()" class="w-6 h-6 flex items-center justify-center bg-emerald-50 text-emerald-600 rounded-md border border-emerald-200 font-bold hover:bg-emerald-100 cursor-pointer">+</button>
+                    <button onclick="deleteTargetRow('${rowId}')" class="w-6 h-6 flex items-center justify-center bg-red-50 text-red-500 rounded-md border border-red-100 hover:bg-red-100 cursor-pointer">&times;</button>
+                </td>
+                <td class="py-4 px-2">
+                    <!-- select elements containing rounded corners -->
+                    <select onchange="autocompleteFieldData('${rowId}', this.value)" class="bg-white border border-slate-300 rounded-xl px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 w-full max-w-[110px] font-semibold">
+                        ${selectionMarkupOptions}
+                    </select>
+                </td>
+                <td class="py-4 px-2 text-slate-400 font-normal item-name-label">—</td>
+                <td class="py-4 px-2 text-slate-400 font-normal item-desc-label">—</td>
+                <td class="py-4 px-2">
+                    <input type="number" min="1" value="1" oninput="recalculateLineSumValues('${rowId}')" class="w-full max-w-[75px] border border-slate-200 bg-slate-50 rounded-lg px-2 py-1 text-center text-xs focus:outline-none focus:border-emerald-500">
+                </td>
+                <td class="py-4 px-2 text-slate-400 font-normal item-up-label">0</td>
+                <td class="py-4 px-2 text-right font-semibold item-total-label text-slate-900">0</td>
+            `;
+
+            tBodyContainer.appendChild(trElement);
+        }
+
+        function deleteTargetRow(idToken) {
+            if (tBodyContainer.children.length > 1) {
+                document.getElementById(idToken).remove();
+                calculateTotalAggregates();
+            } else {
+                displayValidationError("Action blocked: Receipt layout requires a minimum baseline of one table row entry field.");
+            }
+        }
+
+        // Monitors ID changes to map values directly from database lookups
+        function autocompleteFieldData(rowId, selectedPid) {
+            const targetRow = document.getElementById(rowId);
+            const nameLabel = targetRow.querySelector('.item-name-label');
+            const descLabel = targetRow.querySelector('.item-desc-label');
+            const upLabel = targetRow.querySelector('.item-up-label');
+
+            if (selectedPid && globalProductDatabase[selectedPid]) {
+                const matchedProduct = globalProductDatabase[selectedPid];
+                nameLabel.textContent = matchedProduct.name;
+                nameLabel.classList.remove('text-slate-400');
+                descLabel.textContent = matchedProduct.desc;
+                descLabel.classList.remove('text-slate-400');
+                upLabel.textContent = formatDisplayNumbers(matchedProduct.up);
+                upLabel.classList.remove('text-slate-400');
+
+                targetRow.dataset.up = matchedProduct.up;
+                targetRow.dataset.name = matchedProduct.name;
+                targetRow.dataset.desc = matchedProduct.desc;
+            } else {
+                nameLabel.textContent = "—";
+                nameLabel.classList.add('text-slate-400');
+                descLabel.textContent = "—";
+                descLabel.classList.add('text-slate-400');
+                upLabel.textContent = "0";
+                upLabel.classList.add('text-slate-400');
+
+                targetRow.dataset.up = 0;
+                targetRow.removeAttribute('data-name');
+            }
+            recalculateLineSumValues(rowId);
+        }
+
+        function recalculateLineSumValues(rowId) {
+            const targetRow = document.getElementById(rowId);
+            const selectedQuantity = parseInt(targetRow.querySelector('input[type="number"]').value) || 0;
+            const absoluteUnitPrice = parseFloat(targetRow.dataset.up) || 0;
+
+            const computedRowSum = selectedQuantity * absoluteUnitPrice;
+            targetRow.querySelector('.item-total-label').textContent = formatDisplayNumbers(computedRowSum);
+            targetRow.dataset.totalValue = computedRowSum;
+
+            calculateTotalAggregates();
+        }
+
+        function calculateTotalAggregates() {
+            let grandSum = 0;
+            tBodyContainer.querySelectorAll('tr').forEach(row => {
+                grandSum += parseFloat(row.dataset.totalValue) || 0;
+            });
+            grandTotalUI.textContent = formatDisplayNumbers(grandSum);
+        }
+
+        function displayValidationError(message) {
+            validationAlertEl.textContent = message;
+            validationAlertEl.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Compiles visual rows into multi-dimensional standard nested value arrays
+        function buildReceiptPrintDataset() {
+            validationAlertEl.classList.add('hidden');
+            const customerNameInput = document.getElementById('customer-name').value.trim();
+
+            // Constraint Verification 1: Mandatory Customer identity input field
+            if (!customerNameInput) {
+                displayValidationError("Verification Failure: Customer Name must be defined before creating a cash transaction receipt record.");
+                return null;
+            }
+
+            const dynamicNestedStateArrays = [];
+            let calculatedRunningTotal = 0;
+            let activeAuthenticatedRowsCount = 0;
+
+            const printSlipItemsBox = document.getElementById('slip-items-box');
+            printSlipItemsBox.innerHTML = ''; 
+
+            tBodyContainer.querySelectorAll('tr').forEach(row => {
+                const selectEl = row.querySelector('select');
+                const quantityInput = row.querySelector('input[type="number"]');
+                
+                if (!selectEl.value || !row.dataset.name) return;
+
+                activeAuthenticatedRowsCount++;
+                const itemQty = parseInt(quantityInput.value) || 0;
+                const itemUnitPrice = parseFloat(row.dataset.up) || 0;
+                const totalLineCost = itemQty * itemUnitPrice;
+                calculatedRunningTotal += totalLineCost;
+
+                // Generates multi-dimensional array mapping: Each item contains an array matching [unitPrice, totalCost]
+                dynamicNestedStateArrays.push({
+                    pid: selectEl.value,
+                    qty: itemQty,
+                    pricingMetrics: [itemUnitPrice, totalLineCost]
+                });
+
+                // Injects structured receipt layout rows aligned correctly
+                const receiptItemLine = document.createElement('div');
+                receiptItemLine.className = "receipt-row";
+                receiptItemLine.style.fontSize = "12px";
+                receiptItemLine.innerHTML = `
+                    <span style="flex: 2; text-align: left; text-transform: uppercase;">${row.dataset.name}</span>
+                    <span style="flex: 1; text-align: center;">${itemQty} x ${formatDisplayNumbers(itemUnitPrice)}</span>
+                    <span style="flex: 1; text-align: right; font-weight: bold;">${formatDisplayNumbers(totalLineCost)}</span>
+                `;
+                printSlipItemsBox.appendChild(receiptItemLine);
+            });
+
+            // Constraint Verification 2: Enforce at least one product has been chosen
+            if (activeAuthenticatedRowsCount === 0) {
+                displayValidationError("Verification Failure: At least one product code field entry must be configured to generate a valid receipt summary.");
+                return null;
+            }
+
+            // Sync generated state variables to printing overlay elements
+            document.getElementById('slip-customer').textContent = customerNameInput.toUpperCase();
+            document.getElementById('slip-grand-total').textContent = formatDisplayNumbers(calculatedRunningTotal);
+
+            return dynamicNestedStateArrays;
+        }
+
+        function handleReceiptPrintAction() {
+            const dynamicArrayResponse = buildReceiptPrintDataset();
+            if (!dynamicArrayResponse) return; // Intercept process execution if structural exceptions exist
+
+            console.log("Captured Dynamic Multi-Dimensional Field Array Structure Map Log:", dynamicArrayResponse);
+            window.print();
+        }
+
+        function resetWorkspaceState() {
+            validationAlertEl.classList.add('hidden');
+            tBodyContainer.innerHTML = '';
+            document.getElementById('customer-name').value = '';
+            addNewRow();
+            calculateTotalAggregates();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business App</title>
+  <link rel="stylesheet" href="utilities.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app-container">
+
+    <div class="header">
+      <div class="date">Saturday 14/05/2026</div>
+    </div>
+    <div class="wrapper">
+      <div class="menu">
+        <div class="nav">
+          <div class="menu-item active" id="dashboard" onclick="loadTabContent('dashboard',this)">
+            <div class="icon"><img src="img/Home.png" alt="" /></div>
+            <h3>Dashboard</h3>
+          </div>
+          <div class="menu-item" id="receipt" onclick="loadTabContent('receipt',this)">
+            <div class="icon"><img src="img/Library books.png" alt="" /></div>
+            <h3>Receipt</h3>
+          </div>
+          <div class="menu-item" id="orders" onclick="loadTabContent('orders',this)">
+            <div class="icon">
+              <img src="img/MoneyWavy.png" alt="MoneyWavy" />
+            </div>
+            <h3>Orders</h3>
+          </div>
+          <div class="menu-item" id="stock" onclick="loadTabContent('stock',this)">
+            <div class="icon">
+              <img src="img/Add shopping cart.png" alt="Stock-photo" />
+            </div>
+            <h3>Stock</h3>
+          </div>
+          <div class="menu-item" id="items" onclick="loadTabContent('items',this)">
+            <div class="icon"><img src="img/Equalizer.png" alt="" /></div>
+            <h3>Items</h3>
+          </div>
+        </div>
+        <div class="buttom-nav">
+          <div class="menu-item" id="settings" onclick="loadTabContent('settings',this)">
+            <div class="icon"><img src="img/Build circle.png" alt="" /></div>
+            <h3>Settings</h3>
+          </div>
+          <div class="menu-item" id="logout" onclick="">
+            <div class="icon"><img src="img/Logout.png" alt="" /></div>
+            <h3>Logout</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="board">
+
+      </div>
+    </div>
+  </div>
+  <!-- ================================================================= -->
+  <!-- PRINT-ONLY RECEIPT SLIP (Hidden completely on screen)            -->
+  <!-- ================================================================= -->
+  <div id="printable-receipt-slip" class="max-w-sm mx-auto">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <h2 style="font-size: 16px; font-weight: bold; margin: 0; text-transform: uppercase;">MARKET OUTLET STORE</h2>
+      <p style="margin: 2px 0; color: #555;">100 Business Rd, Suite A</p>
+      <p style="margin: 2px 0; color: #555;">Tel: (555) 019-2834</p>
+      <p style="margin: 10px 0 5px 0; border-bottom: 1px dashed #000; padding-bottom: 5px; font-weight: bold;">CASH
+        RECEIPT</p>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+        <span>Date:</span><span id="slip-date">2026-07-02</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Customer:</span><span id="slip-customer" style="font-weight: bold;">—</span>
+      </div>
+    </div>
+
+    <div style="border-bottom: 1px dashed #000; margin-bottom: 10px;"></div>
+
+    <!-- Dynamic Items Container inside Receipt -->
+    <div id="slip-items" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
+      <!-- Programmatically injected items populate here -->
+    </div>
+
+    <div style="border-bottom: 1px dashed #000; margin-bottom: 10px;"></div>
+
+    <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold;">
+      <span>TOTAL:</span>
+      <span>XAF <span id="slip-grand-total">0</span></span>
+    </div>
+
+    <div style="text-align: center; margin-top: 35px; border-top: 1px dashed #000; padding-top: 15px;">
+      <p style="font-weight: bold; margin: 0; letter-spacing: 1px;">THANK YOU FOR YOUR VISIT!</p>
+      <p style="color: #666; margin: 4px 0 0 0; font-size: 10px;">Please retain this receipt for returns</p>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>

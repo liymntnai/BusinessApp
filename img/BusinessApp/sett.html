@@ -1,0 +1,83 @@
+<!-- Settings Tab View -->
+<h1>Settings</h1>
+<div class="flex h-24">
+    <button class="btn-secondary" id="items-btn">
+        <img src="img/Equalizer.png" alt="">
+        Items
+    </button>
+    <button class="btn-secondary" id="accounts-btn">
+        <img src="img/Equalizer.png" alt="">
+        Accounts
+    </button>
+    <div class="setting-tab">
+
+        <div class="item active">
+            <h3 class="bold">Items</h3>
+            <div class="flex-v h-16">
+                <div class="flex-between">
+                    <p class="p1 bold">1. Username:<span id="username">admin</span></p>
+                    <div class="flex h-8">
+                        <img src="" alt="">
+                        <p class="p1 color-primary">Edit</p>
+                    </div>
+                </div>
+                <div>
+                    <input type="text" placeholder="New username" class="input-name" value="admin">
+                </div>
+                <div class="flex-between">
+                    <button type="button" class="btn-cancel">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-primary">
+                        Save
+                    </button>
+                </div>
+
+            </div>
+
+
+            <div class="flex-v h-16">
+                <div class="flex-between">
+                    <p class="p1 bold">2. Password</p>
+                    <div class="flex h-8">
+                        <img src="" alt="">
+                        <p class="p1 color-primary">Edit</p>
+                    </div>
+                </div>
+                <div>
+                    <input type="password" placeholder="Currnet password" class="input-name">
+                    <input type="password" placeholder="New password" class="input-name">
+                    <input type="password" placeholder="Confirm password" class="input-name">
+                </div>
+                <div class="flex-between">
+                    <button type="button" class="btn-cancel">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-primary">
+                        Save
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+     const itemsTab = document.getElementById('items-tab');
+    const accountsTab = document.getElementById('accounts-tab');
+    const itemsSection = document.getElementById('items-section');
+    const accountsSection = document.getElementById('accounts-section');
+
+    function setActiveTab(activeTab, activeSection) {
+      itemsTab.classList.remove('active');
+      accountsTab.classList.remove('active');
+      itemsSection.classList.remove('active');
+      accountsSection.classList.remove('active');
+
+      activeTab.classList.add('active');
+      activeSection.classList.add('active');
+    }
+
+    itemsTab.addEventListener('click', () => setActiveTab(itemsTab, itemsSection));
+    accountsTab.addEventListener('click', () => setActiveTab(accountsTab, accountsSection));
+</script>

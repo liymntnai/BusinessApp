@@ -1,0 +1,185 @@
+
+    <div class="app-container">
+        <!-- <aside class="sidebar">
+            <nav class="nav-menu">
+                <a href="#" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="#" class="nav-item active"><i class="fa-solid fa-wallet"></i> Sales</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-cart-shopping"></i> Stock</a>
+                <a href="#" class="nav-item custom-receipt"><i class="fa-solid fa-receipt"></i> Receipt</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Items</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-right-from-bracket"></i> Log Out</a>
+            </nav>
+        </aside> -->
+
+        <main class="main-content">
+            <h1>Items</h1>
+
+            <div class="table-container">
+                <table class="items-table p1">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>CP</th>
+                            <th>Wholesale 1 (>200)</th>
+                            <th>Wholesale 2 (>100)</th>
+                            <th>Retail</th>
+                            <th>In Stock</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-body">
+                        <tr data-id="GD12">
+                            <td>
+                                <div class="flex h-16">
+                                    <div class="item-avatar">
+                                        <img src="img/groundnut.png" alt="Groundnut" style="width: 100%; height: 100%; border-radius: 50%;">
+                                    </div>
+                                    <div class="flex-v">
+                                        <p class="p1 bold">Groundnut</p>
+                                        <p class="p1">GD12</p>
+                               </div>
+                               </div>
+                            </td>
+                            <td class="p1">1000</td>
+                            <td class="p1">1100</td>
+                            <td class="p1">1200</td>
+                            <td class="p1">1300</td>
+                            <td class="p1">100</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="action-btn edit-btn" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="action-btn delete-btn" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                    <div class="dropdown-container">
+                                        <button class="action-btn more-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                        <div class="dropdown-menu">
+                                            <button class="dropdown-item details-option"><i class="fa-solid fa-eye"></i> Details</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-id="RdC1">
+                            <td>
+                                <div class="flex h-16">
+                                    <div class="item-avatar">
+                                        <img src="img/red-corn.png" alt="Red Corn" style="width: 100%; height: 100%; border-radius: 50%;">
+                                    </div>
+                                    <div class="flex-v">
+                                        <p class="p1 bold">Red Corn</p>
+                                        <p class="p1">RdC1</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p1">1000</td>
+                            <td class="p1">1000</td>
+                            <td class="p1">1000</td>
+                            <td class="p1">1000</td>
+                            <td class="p1">40</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="action-btn edit-btn" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="action-btn delete-btn" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                    <div class="dropdown-container">
+                                        <button class="action-btn more-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                        <div class="dropdown-menu">
+                                            <button class="dropdown-item details-option"><i class="fa-solid fa-eye"></i> Details</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Item</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editItemRowId">
+                <div class="form-group">
+                    <label for="editName">Item Name</label>
+                    <input class="input-form" type="text" id="editName" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editCP">Cost Price (CP)</label>
+                        <input class="input-form" type="number" id="editCP" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editRetail">Retail Price</label>
+                        <input class="input-form" type="number" id="editRetail" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editWholesale1">Wholesale 1 (>200)</label>
+                        <input class="input-form" type="number" id="editWholesale1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editWholesale2">Wholesale 2 (>100)</label>
+                        <input class="input-form" type="number" id="editWholesale2" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editStock">In Stock</label>
+                    <input class="input-form" type="number" id="editStock" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary close-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2>Delete Item</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <p>Are you sure you want to delete <strong id="deleteItemName">this item</strong>? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary close-btn">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="flex-between mb-2">
+                <h2>Product Details</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="details-body">
+                <div class="details-profile">
+                    <div class="large-avatar"></div>
+                    <div>
+                        <h3 id="detName">Groundnut</h3>
+                        <p id="detCode">Code: GD12</p>
+                    </div>
+                </div>
+                <hr class="divider">
+                <div class="details-grid">
+                    <div class="detail-block"><span>Cost Price:</span> <strong id="detCP">1000</strong></div>
+                    <div class="detail-block"><span>Retail Price:</span> <strong id="detRetail">1300</strong></div>
+                    <div class="detail-block"><span>Wholesale 1 (>200):</span> <strong id="detW1">1100</strong></div>
+                    <div class="detail-block"><span>Wholesale 2 (>100):</span> <strong id="detW2">1200</strong></div>
+                    <div class="detail-block"><span>Current Stock:</span> <strong id="detStock" class="stock-badge">100</strong></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary close-btn">Close</button>
+            </div>
+        </div>
+    </div>

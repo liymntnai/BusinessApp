@@ -1,0 +1,71 @@
+<h1>
+  Settings
+</h1>
+<div class="flex-v h-16 px-1">
+  <h4 class="bold">
+    Account
+  </h4>
+  <div class="flex-v h-16">
+    <div class="flex h-32">
+      <p class="p1">1. Username: <span id="username">admin</span></p>
+      <button class="text-btn" id="change-username">
+        <img src="img/Edit Group.svg" alt="" id="edit-icon">
+        <p class="p1">Edit</p>
+      </button>
+    </div>
+    <div class="flex-v h-16" id="form-edit-username" style="display: none;">
+      <div class="flex-v h-4" id="username-form" style="display: non;">
+        <p class="p1 bold" style="color: var(--dark-green);">
+          <span style="color: var(--error-text);">*</span>Username
+        </p>
+        <input type="text" class="input-name" value="admin" />
+      </div>
+      <div class="flex-v h-4" id="username-form" style="display: nne;">
+        <p class="p1 bold" style="color: var(--dark-green);">
+          <span style="color: var(--error-text);">*</span>Enter password
+        </p>
+        <input type="password" class="input-name" />
+      </div>
+      <div class="flex-between">
+        <button type="button" class="btn-primary">
+          Save
+        </button>
+        <button type="button" class="btn-cancel" id="btn-cancel--username">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="flex h-32 px-1">
+  <p class="p1">2. Password</p>
+  <button class="text-btn" id="change-password">
+    <img src="img/Edit Group.svg" alt="">
+    <p class="p1">Edit</p>
+  </button>
+</div>
+<div class="flex-v h-32" id="form-edit-password" style="display: none;">
+
+  <div class="flex-v h-16" id="username-form" style="display: non;">
+
+    <input type="text" class="input-name" placeholder="Current password" />
+
+    <input type="password" class="input-name" placeholder="Enter new password" />
+
+    <input type="password" class="input-name" placeholder="Confirm password" />
+  </div>
+  <div class="flex-between">
+    <button type="button" class="btn-primary">
+      Save
+    </button>
+    <button type="button" class="btn-cancel" id="btn-cancel--password">
+      Cancel
+    </button>
+  </div>
+
+</div>
+
+</div>
+</div>
+</div>

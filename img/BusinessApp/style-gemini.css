@@ -1,0 +1,149 @@
+    /* Modern Manrope Typography Import */
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap');
+        
+        /* Your Explicit Style Guide Palette */
+        :root {
+            --primary-color: #49B26C;
+            --light-green: #F3FDF6;
+            --dark-green: #092B14;
+            --error-text: #BC4749;
+            --error-container: #E8BFC0;
+            --light-gray: #CBCBCB;
+            --dark-gray: #424242;
+            --primary-hover: #1CF464;
+            --alert: #EBCF40;
+            --surface-board: #F5F5F5;
+        }
+
+        body { 
+            font-family: "Manrope", sans-serif; 
+            background-color: var(--surface-board);
+            color: var(--dark-gray);
+            height: 100vh;
+        }
+
+        /* Elements styled strictly via Design System Tokens */
+        .top-banner {
+            background-color: var(--primary-color);
+            color: var(--light-green);
+        }
+
+        .sidebar-nav {
+            background-color: var(--light-green);
+            border-right: 1px solid var(--light-gray);
+        }
+
+        .nav-item-active {
+            background-color: var(--primary-color);
+            color: var(--light-green);
+        }
+
+        .nav-item-active:hover {
+            background-color: var(--primary-hover);
+            color: var(--dark-green);
+        }
+
+        .nav-item-link {
+            color: var(--dark-gray);
+            transition: all 0.2s ease;
+        }
+
+        .nav-item-link:hover {
+          background-color: var(--primary-hover);
+            color: var(--dark-green);
+        }
+
+        .table-header {
+            color: var(--dark-green);
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .btn-add {
+            background-color: var(--light-green);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            transition: all 0.2s ease;
+        }
+
+        .btn-add:hover {
+            background-color: var(--primary-hover);
+            color: var(--dark-green);
+        }
+
+        .btn-delete {
+            background-color: var(--error-container);
+            color: var(--error-text);
+            border: 1px solid var(--error-text);
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--error-text);
+            color: var(--surface-board);
+        }
+
+        .form-input-element {
+            background-color: #FFFFFF;
+            border: 1px solid var(--light-gray);
+            color: var(--dark-gray);
+        }
+
+        .form-input-element:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 1px var(--primary-color);
+        }
+
+        /* Footer Interaction Elements styling */
+        .btn-print {
+            background-color: var(--primary-color);
+            color: #FFFFFF;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-print:hover {
+       background-color: var(--primary-hover);
+            color: var(--dark-green);
+        }
+
+        .btn-cancel {
+            background-color: var(--light-gray);
+            color: var(--error-text);
+            transition: opacity 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            opacity: 0.9;
+        }
+
+        /* TEXT STYLES */
+h1,h2,h3,h4,h5,h6{font-weight: normal;}
+.bold{font-weight: 700;}
+h1{
+font-size:60px ;
+line-height: 100%;
+}
+h2{
+font-size:32px ;
+line-height: 120%;
+}
+h3{
+font-size:24px ;
+line-height: 120%;
+}
+h4{
+font-size: 20px;
+line-height: 120%;
+}
+.p1{
+font-size: 16px;
+line-height: 140%;
+}
+.p2{
+font-size: 14px;
+line-height: 140%;
+}
+.p3{
+font-size: 11px;
+line-height: 140%;
+}

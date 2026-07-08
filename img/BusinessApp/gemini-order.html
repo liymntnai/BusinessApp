@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Dashboard - Orders</title>
+    <style>
+        /* CSS Variables matching your exact theme palette */
+        :root {
+            --primary-green: #4CAF6D;
+            --sidebar-bg: #F0F9F4;
+            --body-bg: #F4F7F5;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header Green Bar */
+        .top-banner {
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 12px 32px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Workspace Grid Split */
+        .workspace {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar Design Layer */
+        aside {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-right: 1px solid #E8F5EE;
+        }
+
+        .nav-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            background: transparent;
+            border: none;
+            color: #334155;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-muted);
+            fill: none;
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary-green);
+            color: var(--white);
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn.active svg {
+            stroke: var(--white);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background-color: #E8F5EE;
+        }
+
+        /* Main Context Panel Components */
+        main {
+            flex: 1;
+            padding: 32px;
+            max-width: 1400px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        /* New Order Call-To-Action Button */
+        .btn-new-order {
+            background-color: var(--primary-green);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-new-order:hover {
+            background-color: #3e9458;
+        }
+
+        .btn-new-order svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--white);
+        }
+
+        /* Card Content Box Canvas */
+        .panel {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .panel-title {
+            color: var(--primary-green);
+            font-size: 22px;
+            font-weight: 400;
+        }
+
+        .link-view-all {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid currentColor;
+        }
+
+        /* Table Core Structure Layout */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        th {
+            color: var(--text-dark);
+            font-weight: 600;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        td {
+            padding: 20px 0;
+            color: #334155;
+            vertical-align: middle;
+            border-bottom: 1px solid #F8FAFC;
+        }
+
+        /* Column Specific Layout Padding Control rules */
+        .col-no { width: 6%; }
+        .col-name { width: 28%; font-weight: 500; }
+        .col-items { width: 28%; color: var(--text-muted); }
+        .col-amount { width: 18%; font-weight: 500; }
+        .col-date { width: 14%; color: var(--text-muted); }
+        .col-action { width: 6%; text-align: right; }
+
+        /* Right Action Arrow Button */
+        .action-arrow-btn {
+            width: 36px;
+            height: 36px;
+            background-color: #E2E8F0;
+            border-radius: 50%;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            
+            /* Applied your exact specified shadow configuration */
+            box-shadow: 0px 5.6px 5.6px 0px rgba(0, 0, 0, 0.25);
+            
+            /* Initial vertical baseline state layout */
+            transform: translateY(0);
+            transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
+        }
+
+        .action-arrow-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: #1E293B;
+            stroke-width: 2.5;
+            fill: none;
+        }
+
+        /* Interactive state rules: moves down slightly and shadow clears on hover */
+        .action-arrow-btn:hover {
+            transform: translateY(3px);
+            box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0); /* Box shadow goes away */
+            background-color: #CBD5E1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-banner">
+        <span>Saturday 14/05/2026</span>
+    </div>
+
+    <div class="workspace">
+        
+        <aside>
+            <button class="nav-btn">
+                <svg viewBox="0 0 24 24" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="14" rx="1"/></svg>
+                Dashboard
+            </button>
+            <button class="nav-btn">
+                <svg viewBox="0 0 24 24" stroke="currentColor"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 6v12"/></svg>
+                Receipt
+            </button>
+            <button class="nav-btn active">
+                <svg viewBox="0 0 24 24" stroke="currentColor"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                Orders
+            </button>
+            <button class="nav-btn">
+                <svg viewBox="0 0 24 24" stroke="currentColor"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                Stock
+            </button>
+            <button class="nav-btn">
+                <svg viewBox="0 0 24 24" stroke="currentColor"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+                Items
+            </button>
+        </aside>
+
+        <main>
+            <div class="page-header">
+                <h1>Orders</h1>
+                <button class="btn-new-order">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+                    New Order
+                </button>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Recent</h2>
+                    <a href="#" class="link-view-all">View all</a>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-no">No</th>
+                                <th class="col-name">Customer Name</th>
+                                <th class="col-items">Items</th>
+                                <th class="col-amount">Amount</th>
+                                <th class="col-date">Date</th>
+                                <th class="col-action"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-no">1</td>
+                                <td class="col-name">Ebengue Jean Nestor</td>
+                                <td class="col-items">G10, G12, A13</td>
+                                <td class="col-amount">240,000</td>
+                                <td class="col-date">Just Now</td>
+                                <td class="col-action">
+                                    <button class="action-arrow-btn" aria-label="View Details">
+                                        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">1</td>
+                                <td class="col-name">Ali Mohamad</td>
+                                <td class="col-items">G10, G12, A13</td>
+                                <td class="col-amount">240,000</td>
+                                <td class="col-date">Just Now</td>
+                                <td class="col-action">
+                                    <button class="action-arrow-btn" aria-label="View Details">
+                                        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">1</td>
+                                <td class="col-name">Thomas Mabu</td>
+                                <td class="col-items">G10, G12, A13</td>
+                                <td class="col-amount">240,000</td>
+                                <td class="col-date">Just Now</td>
+                                <td class="col-action">
+                                    <button class="action-arrow-btn" aria-label="View Details">
+                                        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">1</td>
+                                <td class="col-name">Mabu</td>
+                                <td class="col-items">G10, G12, A13</td>
+                                <td class="col-amount">240,000</td>
+                                <td class="col-date">Just Now</td>
+                                <td class="col-action">
+                                    <button class="action-arrow-btn" aria-label="View Details">
+                                        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">1</td>
+                                <td class="col-name">Mabu</td>
+                                <td class="col-items">G10, G12, A13</td>
+                                <td class="col-amount">240,000</td>
+                                <td class="col-date">Just Now</td>
+                                <td class="col-action">
+                                    <button class="action-arrow-btn" aria-label="View Details">
+                                        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">1</td>
+                                <td class="col-name">Mabu</td>
+                                <td class="col-items">G10, G12, A13</td>
+                                <td class="col-amount">240,000</td>
+                                <td class="col-date">Just Now</td>
+                                <td class="col-action">
+                                    <button class="action-arrow-btn" aria-label="View Details">
+                                        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">1</td>
+                                <td class="col-name">Mabu</td>
+                                <td class="col-items">G10, G12, A13</td>
+                                <td class="col-amount">240,000</td>
+                                <td class="col-date">Just Now</td>
+                                <td class="col-action">
+                                    <button class="action-arrow-btn" aria-label="View Details">
+                                        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
