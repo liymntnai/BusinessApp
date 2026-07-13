@@ -3,7 +3,7 @@
             <header class="content-header">
                 <h1 id="page-title">Stock</h1>
                 <button id="btn-record-stock" class="btn-primary">
-                    <span>+</span> Record Stock
+                 <div><img src="img/Add-dark-green.svg" alt="New Stock" /></div>Record Stock
                 </button>
             </header>
 
@@ -66,12 +66,10 @@
 
             <div id="record-stock-view" class="view-container hidden">
                 <div class="card-24">
-                    <h4 class="flex h-16 bold">
-                        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5">
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="m4.93 4.93 14.14 14.14" />
-                        </svg>
+                    <h4 class="flex h-16 bold align-center">
+                        <div class="icon">
+              <img src="img/donut-small.svg" alt="Stock-photo" />
+            </div>
                         Product Information
                     </h4>
 
@@ -90,7 +88,7 @@
 
                             <div class="form-group size-qty">
                                 <label class="p2 bold">QTY</label>
-                                <input type="number" class="form-control p1 text-center" value="1">
+                                <input type="number" id="record-stock-input" class="form-control p1 bold text-center" value="1">
                             </div>
                         </div>
 
@@ -106,7 +104,7 @@
 
                         <div class="flex-between form-actions">
                             <button type="button" class="btn-primary">
-                                Print receipt
+                                Save
                             </button>
                             <button type="button" id="btn-cancel" class="btn-cancel">
                                 Cancel

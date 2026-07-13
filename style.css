@@ -18,45 +18,6 @@
     --alert :#EBCF40;
     --surface-board: #F5F5F5;
 }
-/* TEXT STYLES */
-h1,h2,h3,h4,h5,h6{font-weight: normal;}
-.bold{font-weight: 700;}
-h1{
-font-size:60px;
-font-size:32px;
-line-height: 100%;
-}
-h2{
-font-size:32px;
-font-size:24px;
-line-height: 120%;
-}
-h3{
-font-size:24px ;
-font-size:20px ;
-line-height: 120%;
-}
-h4{
-/* font-size: 20px; */
-font-size: 18px;
-line-height: 120%;
-}
-.p1{
-font-size: 16px;
-font-size: 14px;
-line-height: 140%;
-}
-.p2{
-font-size: 14px;
-font-size: 12px;
-line-height: 140%;
-}
-.p3{
-font-size: 11px;
-font-size: 10px;
-line-height: 140%;
-}
-
   
 *{
     margin: 0;
@@ -66,16 +27,56 @@ line-height: 140%;
 body{
     font-family: "Manrope", sans-serif;
     color: var(--dark-green);
-    min-height: 100vh;
-      display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  
+    height: 100vh;  
 }
 .app-container{
-min-height:100dvh;
-    height: 100%;
+height:100vh;
+display: flex;
+flex-direction: column;
+align-items: stretch;
+
 }
+.wrapper{
+  display: flex;
+  height: 100%;
+/* min-height: 100dvh; */
+}
+
+.board{
+display: flex;
+flex-direction: column;
+padding: 32px;
+background-color:var(--surface-board);
+flex-grow: 7;
+gap: 32px;
+min-height: 100%;
+}
+.menu{
+display: flex;
+padding: 8px 16px;
+justify-content: space-between;
+flex-direction: column;
+background-color:var(--light-green);
+color: var(--dark-green);
+flex: 1;
+min-height: 100%;
+}
+.menu-item{
+display: flex;
+gap: 4px;
+padding: 32px 40px;
+padding: 16px 32px;
+border-radius: 8px;
+align-items: center;
+}
+.menu-item.active{
+  background-color: var(--primary-color);
+}
+.menu-item:hover{
+  background-color: var(--primary-hover);
+  cursor: pointer;
+}
+
 .header{
     padding: 24px 32px;
     background-color: var(--primary-color);
@@ -298,6 +299,7 @@ Stock Page
             padding: 18px 12px;
             border-bottom: 1px solid var(--light-gray);
             color: #2D2D2D;
+            font-size: 16px;
         }
 
         .stock-table td:nth-child(1) {
@@ -363,9 +365,11 @@ Stock Page
         }
 
         .size-qty {
-            width: 45px;
+            width: 80px;
         }
-
+        #record-stock-input{
+            padding: 12px 8px;
+        }
         .form-control {
             width: 100%;
             background-color: var(--light-green);
@@ -375,6 +379,7 @@ Stock Page
             color: var(--dark-gray);
             outline: none;
             font-family: inherit;
+            font-weight: bold;
         }
 
         textarea.form-control {

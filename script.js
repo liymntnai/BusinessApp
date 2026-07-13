@@ -47,7 +47,7 @@ async function loadTabContent(tabName, element) {
             case 'stock':
                 loadStock();
                 break;
-            case 'items':
+            case 'products':
                 loadItems();
                 break;
             default:
@@ -191,7 +191,6 @@ function buildReceiptPrintTemplate() {
     const tbody = document.getElementById('receipt-rows-container');
     const errorBanner = document.getElementById('validation-error');
     errorBanner.classList.add('hidden'); // Clear error state
-
     const customerName = document.getElementById('customer-name').value.trim();
 
     // Validation 1: Check Customer Name
@@ -516,11 +515,6 @@ function loadItems() {
             document.getElementById("detStock").innerText = itemStock;
 
             const detImgWrapper = document.getElementById("detImgWrapper");
-            if (currentImg) {
-                detImgWrapper.innerHTML = `<div class="large-avatar" style="background-image: ${currentImg}"></div>`;
-            } else {
-                detImgWrapper.innerHTML = `<div class="large-avatar default-avatar"><i class="fa-solid fa-image"></i></div>`;
-            }
             detailsModal.classList.add("show");
             target.closest(".dropdown-menu").classList.remove("show");
         }
