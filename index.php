@@ -1,3 +1,11 @@
+<?php
+$root = __DIR__;
+define('VIEW_PATH', $root.DIRECTORY_SEPARATOR.'/Views');
+
+require __DIR__ . '/app/auth.php';
+require_login_page();
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -14,6 +22,7 @@
 
     <div class="header">
       <div class="date">Saturday 14/05/2026</div>
+      <script></script>
     </div>
     <div class="wrapper">
       <div class="menu">
@@ -48,7 +57,7 @@
             <div class="icon"><img src="img/Build circle.png" alt="" /></div>
             <h3>Settings</h3>
           </div>
-          <div class="menu-item" id="logout" onclick="">
+          <div class="menu-item" id="logout" onclick="logout()">
             <div class="icon"><img src="img/Logout.png" alt="" /></div>
             <h3>Logout</h3>
           </div>

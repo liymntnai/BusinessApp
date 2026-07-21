@@ -1,9 +1,13 @@
-<!-- Items Tab View -->
+<?php
+require __DIR__ . '/../app/auth.php';
+require_login_fragment();
+?>
+<!-- Receipt Tab View -->
 <h1 class="">New Receipt</h1>
 
 <!-- Validation Alert Banner -->
-<div id="validation-error"
-    class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm font-medium">
+<div id="validation-error" style="background:var(--error-container);"
+    class="hidden error-text">
     Please fill out all required fields.
 </div>
 <div class="flex-v flex-between" style="height: 100%;">
@@ -51,5 +55,17 @@
     </div>
 </div>
 
-
+<!-- Save-after-print confirmation modal -->
+<div id="saveOrderModal" class="modal">
+    <div class="modal-content modal-sm">
+        <div class="flex-between mb-2">
+            <h2>Save Order</h2>
+            <span class="close-modal" onclick="dismissSaveOrderModal()">&times;</span>
+        </div>
+        <p>Save this receipt as an order? This will record the sale and update stock levels.</p>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-cancel" onclick="dismissSaveOrderModal()">Discard</button>
+            <button type="button" id="confirmSaveOrderBtn" class="btn-primary" onclick="confirmSaveOrder()">Save</button>
+        </div>
+    </div>
 </div>

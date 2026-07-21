@@ -1,15 +1,13 @@
 'use strict';
-async function loadDashboard() {
 
+
+async function loadDashboard() {
     try {
-        const response = await fetch(`dashboard.html`);
+        const response = await fetch(`Views/dashboard.php`);
         if (!response.ok) throw new Error('Page not found');
 
         const html = await response.text();
-
-        // 3. Inject it straight into your content window container
         document.querySelector('.board').innerHTML = html;
-        syncDashboard('today');
     } catch (error) {
         document.querySelector('.board').innerHTML = `<h2>Error loading page</h2>`;
     }
@@ -20,29 +18,23 @@ async function loadTabContent(tabName, element) {
     document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
     element.classList.add('active');
 
-    // 2. Fetch the large piece of code/markup from an external file
+    // 2. Fetch the server-rendered fragment for this tab
     try {
-        const response = await fetch(`${tabName}.html`);
+        const response = await fetch(`Views/${tabName}.php`);
         if (!response.ok) throw new Error('Page not found');
 
         const html = await response.text();
 
-        // 3. Inject it straight into your content window container
+        // 3. Inject it straight into the content window container
         document.querySelector('.board').innerHTML = html;
-        // Deciding which script tab to load based on the tabName
+
+        // Deciding which script to run based on the tabName
         switch (tabName) {
-            case 'dashboard':
-                loadDashboard();
-                break;
-            // Add more cases for other tabs if needed
             case 'settings':
                 loadSettings();
                 break;
             case 'receipt':
                 loadReceipt();
-                break;
-            case 'orders':
-                // loadOrders();
                 break;
             case 'stock':
                 loadStock();
@@ -50,36 +42,46 @@ async function loadTabContent(tabName, element) {
             case 'products':
                 loadItems();
                 break;
+            case 'dashboard':
+            case 'orders':
+                // fully server-rendered, no further JS wiring needed
+                break;
             default:
                 alert(`No script found for tab: ${tabName}`);
         }
-
 
     } catch (error) {
         console.log(error)
         document.querySelector('.board').innerHTML = `<h2>Error loading page</h2>`;
     }
+}
 
-
+async function logout() {
+    try {
+        await fetch('api/logout.php', { method: 'POST' });
+    } catch (error) {
+        // ignore network errors — still send the user back to the login page
+    }
+    window.location.href = 'Views/login.php';
 }
 
 loadDashboard()
 
-// Mock Database Object
-const productDatabase = {
-    "RdCn": { name: "Red Corn", desc: "bag", up: 4000 },
-    "WhCn": { name: "White Corn", desc: "bag", up: 4200 },
-    "YlCn": { name: "Yellow Corn", desc: "bag", up: 3800 },
-    "SgBr": { name: "Sugar Brown", desc: "kg", up: 800 }
-};
+// Item catalog for the receipt PID dropdown, populated from the DB by loadReceipt().
+let productDatabase = {};
 
-function loadReceipt() {
-
-
-    // Set static date dynamic fallback matching 2026 timeline
+async function loadReceipt() {
     document.getElementById('slip-date').textContent = new Date().toISOString().split('T')[0];
-    addRow(); // Row initializes cleanly completely unselected
 
+    try {
+        const response = await fetch('api/items_catalog.php');
+        const result = await response.json();
+        productDatabase = result.items || {};
+    } catch (error) {
+        productDatabase = {};
+    }
+
+    addRow(); // Row initializes cleanly once the catalog is loaded
 }
 function formatNumber(num) {
     return new Intl.NumberFormat('en-US').format(num);
@@ -244,6 +246,9 @@ function buildReceiptPrintTemplate() {
     return structuredArray;
 }
 
+// Receipt lines + customer name staged between print time and the save-confirmation modal.
+let pendingOrderPayload = null;
+
 function printReceipt() {
     const dataLog = buildReceiptPrintTemplate();
 
@@ -253,12 +258,54 @@ function printReceipt() {
         return;
     }
 
-    console.log("Captured Dynamic Array Structured Log: ", dataLog);
-    
+    pendingOrderPayload = {
+        customer_name: document.getElementById('customer-name').value.trim(),
+        lines: dataLog,
+    };
+
     // Small delay to ensure DOM is updated before printing
     setTimeout(() => {
         window.print();
+        showSaveOrderModal();
     }, 100);
+}
+
+function showSaveOrderModal() {
+    const modal = document.getElementById('saveOrderModal');
+    if (modal) modal.classList.add('show');
+}
+
+function dismissSaveOrderModal() {
+    const modal = document.getElementById('saveOrderModal');
+    if (modal) modal.classList.remove('show');
+    pendingOrderPayload = null;
+}
+
+async function confirmSaveOrder() {
+    if (!pendingOrderPayload) return;
+    const btn = document.getElementById('confirmSaveOrderBtn');
+    if (btn) btn.disabled = true;
+
+    try {
+        const response = await fetch('api/save_order.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(pendingOrderPayload)
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            pendingOrderPayload = null;
+            dismissSaveOrderModal();
+            resetForm();
+        } else {
+            alert(result.error || 'Could not save order.');
+        }
+    } catch (error) {
+        alert('Unable to reach the server.');
+    } finally {
+        if (btn) btn.disabled = false;
+    }
 }
 
 function resetForm() {
@@ -270,15 +317,6 @@ function resetForm() {
     addRow();
     calculateGrandTotal();
 }
-
-
-// Mock dataset mapped across timeframes (with clear test figures for 'today')
-const dataset = {
-    today: { orders: 18, gross: 256000, expenses: 100000 },
-    week: { orders: 112, gross: 1450000, expenses: 420000 },
-    month: { orders: 401, gross: 8900000, expenses: 2300000 },
-    year: { orders: 5120, gross: 3105000000, expenses: 950000000 }
-};
 
 /**
  * Formats numeric metrics safely into clean target strings.
@@ -298,54 +336,115 @@ function parseBusinessAbbreviation(value) {
 /**
  * Main UI synchronization method execution routine
  */
-function syncDashboard(timeframe) {
+async function syncDashboard(timeframe) {
     // Re-sync all individual selects to show matching time selections
     const pickers = document.querySelectorAll('.time-select');
     pickers.forEach(picker => picker.value = timeframe);
 
-    const activeData = dataset[timeframe];
-    const computationalNetProfit = activeData.gross - activeData.expenses;
+    try {
+        const response = await fetch(`api/dashboard_stats.php?period=${encodeURIComponent(timeframe)}`);
+        const data = await response.json();
+        if (!data.success) throw new Error(data.error || 'Failed to load dashboard stats');
 
-    // Direct DOM Updates
-    document.getElementById('val-orders').innerText = activeData.orders.toLocaleString('en-US');
-    document.getElementById('val-gross').innerText = parseBusinessAbbreviation(activeData.gross);
-    document.getElementById('val-expenses').innerText = parseBusinessAbbreviation(activeData.expenses);
-    document.getElementById('val-net').innerText = parseBusinessAbbreviation(computationalNetProfit);
+        document.getElementById('val-orders').innerText = data.orders.toLocaleString('en-US');
+        document.getElementById('val-gross').innerText = parseBusinessAbbreviation(data.gross);
+        document.getElementById('val-expenses').innerText = parseBusinessAbbreviation(data.expenses);
+        document.getElementById('val-net').innerText = parseBusinessAbbreviation(data.net);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-// Initialize directly into 'today' dataset view layout
 /***Settings page */
 function loadSettings() {
     const editUsername = document.getElementById("change-username")
     const btnCancelUsername = document.getElementById('btn-cancel--username')
-    const usernameForm = document.getElementById("form-edit-username")
+    const usernameFormWrapper = document.getElementById("form-edit-username")
+    const usernameForm = document.getElementById("username-form")
+    const usernameFormError = document.getElementById("username-form-error")
 
     const editPassword = document.getElementById("change-password")
-    const passwordForm = document.getElementById("form-edit-password")
+    const passwordFormWrapper = document.getElementById("form-edit-password")
+    const passwordForm = document.getElementById("password-form")
     const btnCancelPassword = document.getElementById('btn-cancel--password')
+    const passwordFormError = document.getElementById("password-form-error")
 
     editUsername.addEventListener('click', function () {
-        usernameForm.style.display = 'flex'
+        usernameFormWrapper.style.display = 'flex'
         editUsername.style.display = 'none'
     })
     btnCancelUsername.addEventListener('click', function () {
-        usernameForm.style.display = 'none'
+        usernameFormWrapper.style.display = 'none'
         editUsername.style.display = 'flex'
     })
     editPassword.addEventListener('click', function () {
-        passwordForm.style.display = 'flex'
+        passwordFormWrapper.style.display = 'flex'
         editPassword.style.display = 'none'
     })
     btnCancelPassword.addEventListener('click', function () {
-        passwordForm.style.display = 'none'
+        passwordFormWrapper.style.display = 'none'
         editPassword.style.display = 'flex'
     })
 
-}
-function openform() {
+    usernameForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        usernameFormError.classList.add('hidden');
 
+        const payload = {
+            action: 'username',
+            new_username: document.getElementById('new-username-input').value.trim(),
+            current_password: document.getElementById('username-confirm-password').value,
+        };
+
+        try {
+            const response = await fetch('api/account_update.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.success) {
+                loadTabContent('settings', document.getElementById('settings'));
+            } else {
+                usernameFormError.textContent = result.error || 'Could not update username.';
+                usernameFormError.classList.remove('hidden');
+            }
+        } catch (error) {
+            usernameFormError.textContent = 'Unable to reach the server.';
+            usernameFormError.classList.remove('hidden');
+        }
+    });
+
+    passwordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        passwordFormError.classList.add('hidden');
+
+        const payload = {
+            action: 'password',
+            current_password: document.getElementById('current-password-input').value,
+            new_password: document.getElementById('new-password-input').value,
+            confirm_password: document.getElementById('confirm-new-password-input').value,
+        };
+
+        try {
+            const response = await fetch('api/account_update.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.success) {
+                loadTabContent('settings', document.getElementById('settings'));
+            } else {
+                passwordFormError.textContent = result.error || 'Could not update password.';
+                passwordFormError.classList.remove('hidden');
+            }
+        } catch (error) {
+            passwordFormError.textContent = 'Unable to reach the server.';
+            passwordFormError.classList.remove('hidden');
+        }
+    });
 }
-/** */
 
 /****Stock page view */
 function loadStock() {
@@ -355,6 +454,8 @@ function loadStock() {
     const stockListView = document.getElementById('stock-list-view');
     const recordStockView = document.getElementById('record-stock-view');
     const pageTitle = document.getElementById('page-title');
+    const stockForm = document.getElementById('stock-entry-form');
+    const stockFormError = document.getElementById('stock-form-error');
 
     btnRecordStock.addEventListener('click', () => {
         stockListView.classList.add('hidden');
@@ -369,39 +470,97 @@ function loadStock() {
         pageTitle.textContent = 'Stock';
         btnRecordStock.disabled = false;
     });
+
+    stockForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        stockFormError.classList.add('hidden');
+
+        const payload = {
+            pid: document.getElementById('stock-item-select').value,
+            qty: parseFloat(document.getElementById('record-stock-input').value) || 0,
+            supplier: document.getElementById('record-stock-supplier').value.trim(),
+            description: document.getElementById('record-stock-description').value.trim(),
+        };
+
+        try {
+            const response = await fetch('api/stock_record.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.success) {
+                loadTabContent('stock', document.getElementById('stock'));
+            } else {
+                stockFormError.textContent = result.error || 'Could not record stock.';
+                stockFormError.classList.remove('hidden');
+            }
+        } catch (error) {
+            stockFormError.textContent = 'Unable to reach the server.';
+            stockFormError.classList.remove('hidden');
+        }
+    });
 }
 
-//*****ITEMS page */
+//*****Products page */
 function loadItems() {
 
-    // Current Active Row tracking DOM element 
+    // Current Active Row tracking DOM element
     let activeRow = null;
-
-    let tempImageDataUrl = null; // Temp holder for uploaded image data
+    // File picked in the edit modal, staged until the form is actually submitted
+    let pendingImageFile = null;
 
     // Modals
     const editModal = document.getElementById("editModal");
     const deleteModal = document.getElementById("deleteModal");
     const detailsModal = document.getElementById("detailsModal");
+    const editModalTitle = document.getElementById("editModalTitle");
 
     // Form inputs
     const editForm = document.getElementById("editForm");
     const editItemRowId = document.getElementById("editItemRowId");
+    const editExistingImage = document.getElementById("editExistingImage");
     const editName = document.getElementById("editName");
-    const editCP = document.getElementById("editCP");
     const editCode = document.getElementById("editCode");
+    const editDescription = document.getElementById("editDescription");
+    const editCP = document.getElementById("editCP");
     const editRetail = document.getElementById("editRetail");
     const editWholesale1 = document.getElementById("editWholesale1");
     const editWholesale2 = document.getElementById("editWholesale2");
     const editStock = document.getElementById("editStock");
+    const editFormError = document.getElementById("editFormError");
+    const deleteFormError = document.getElementById("deleteFormError");
     const itemImageInput = document.getElementById("itemImageInput");
     const editImgPreview = document.getElementById("editImgPreview");
+
+    function setImagePreview(imagePath) {
+        if (imagePath) {
+            editImgPreview.style.backgroundImage = `url('${imagePath}')`;
+            editImgPreview.style.backgroundSize = "cover";
+            editImgPreview.style.backgroundPosition = "center";
+            editImgPreview.classList.remove("default-avatar");
+            editImgPreview.innerHTML = "";
+        } else {
+            editImgPreview.style.backgroundImage = "";
+            editImgPreview.classList.add("default-avatar");
+            editImgPreview.innerHTML = '<i class="fa-solid fa-image"></i>';
+        }
+    }
+
+    itemImageInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        pendingImageFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => setImagePreview(e.target.result);
+        reader.readAsDataURL(file);
+    });
 
     // Close buttons handlers
     document.querySelectorAll(".close-modal, .close-btn, .btn-cancel").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".modal").forEach(m => m.classList.remove("show"));
-            tempImageDataUrl = null; // Clear chosen image state
         });
     });
 
@@ -409,28 +568,26 @@ function loadItems() {
     window.addEventListener("click", (e) => {
         if (e.target.classList.contains("modal")) {
             e.target.classList.remove("show");
-            tempImageDataUrl = null;
         }
         // Dismiss dropdown menus when clicking elsewhere
         if (!e.target.closest(".dropdown-container")) {
             document.querySelectorAll(".dropdown-menu").forEach(d => d.classList.remove("show"));
         }
     });
-    // File input change detection logic
-    itemImageInput.addEventListener("change", function () {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                tempImageDataUrl = e.target.result;
-                // Render preview inside modal
-                editImgPreview.style.backgroundImage = `url('${tempImageDataUrl}')`;
-                editImgPreview.classList.remove("default-avatar");
-                editImgPreview.innerHTML = ""; // Strip inner icon
-            }
-            reader.readAsDataURL(file);
-        }
+
+    // Add Product
+    document.getElementById('add-product-btn').addEventListener('click', () => {
+        activeRow = null;
+        editModalTitle.textContent = "Add Product";
+        editForm.reset();
+        editItemRowId.value = '';
+        editExistingImage.value = '';
+        pendingImageFile = null;
+        setImagePreview(null);
+        editFormError.classList.add('hidden');
+        editModal.classList.add("show");
     });
+
     // Handle Actions inside Items table body directly via event delegation
     const itemsBody = document.getElementById("items-body");
 
@@ -453,45 +610,30 @@ function loadItems() {
         const itemRetail = cells[3].innerText;
         const itemStock = cells[4].innerText;
 
-        // Get row image if custom image exists
-        const rowAvatar = row.querySelector(".item-avatar");
-        const existingAvatarImage = rowAvatar.querySelector("img");
-        let currentImg = rowAvatar.style.backgroundImage;
-
-        if (!currentImg && existingAvatarImage) {
-            currentImg = `url('${existingAvatarImage.src}')`;
-        }
         // 1. Edit Action triggered
         if (target.closest(".edit-btn")) {
+            editModalTitle.textContent = "Edit Product";
             editItemRowId.value = rowId;
             editName.value = itemName;
             editCode.value = itemCode;
+            editDescription.value = row.dataset.description || '';
             editCP.value = itemCP;
             editWholesale1.value = itemW1;
             editWholesale2.value = itemW2;
             editRetail.value = itemRetail;
             editStock.value = itemStock;
-
-
-            if (currentImg) {
-                editImgPreview.style.backgroundImage = currentImg;
-                editImgPreview.classList.remove("default-avatar");
-                editImgPreview.innerHTML = "";
-                tempImageDataUrl = currentImg.replace(/url\(['"]?(.*?)['"]?\)/i, '$1');
-            } else {
-                editImgPreview.style.backgroundImage = "";
-                editImgPreview.classList.add("default-avatar");
-                editImgPreview.innerHTML = '<i class="fa-solid fa-image"></i>';
-                tempImageDataUrl = null;
-            }
+            editExistingImage.value = row.dataset.image || '';
+            pendingImageFile = null;
+            setImagePreview(row.dataset.image || null);
+            editFormError.classList.add('hidden');
 
             editModal.classList.add("show");
-
         }
 
         // 2. Delete Action triggered
         if (target.closest(".delete-btn")) {
             document.getElementById("deleteItemName").innerText = itemName;
+            deleteFormError.classList.add('hidden');
             deleteModal.classList.add("show");
         }
 
@@ -514,47 +656,84 @@ function loadItems() {
             document.getElementById("detRetail").innerText = itemRetail;
             document.getElementById("detStock").innerText = itemStock;
 
-            const detImgWrapper = document.getElementById("detImgWrapper");
+            const detAvatar = document.querySelector("#detailsModal .large-avatar");
+            if (row.dataset.image) {
+                detAvatar.style.backgroundImage = `url('${row.dataset.image}')`;
+                detAvatar.style.backgroundSize = "cover";
+                detAvatar.style.backgroundPosition = "center";
+            } else {
+                detAvatar.style.backgroundImage = "";
+            }
+
             detailsModal.classList.add("show");
             target.closest(".dropdown-menu").classList.remove("show");
         }
     });
 
-    // Save Edit Form alterations back to local DOM row values
-    editForm.addEventListener("submit", (e) => {
+    // Save Add/Edit form to the backend
+    editForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        if (activeRow) {
-            activeRow.querySelector(".item-name").innerText = editName.value;
-            activeRow.querySelector(".item-code").innerText = editCode.value;
-            const cells = activeRow.querySelectorAll(".numeric-val");
-            cells[0].innerText = editCP.value;
-            cells[1].innerText = editWholesale1.value;
-            cells[2].innerText = editWholesale2.value;
-            cells[3].innerText = editRetail.value;
-            cells[4].innerText = editStock.value;
+        editFormError.classList.add('hidden');
 
-            // Apply new image data value back to targeted row avatar block
-            const rowAvatar = activeRow.querySelector(".item-avatar");
-            if (tempImageDataUrl) {
-                rowAvatar.style.backgroundImage = `url('${tempImageDataUrl}')`;
-                rowAvatar.style.backgroundSize = "cover";
-                rowAvatar.style.backgroundPosition = "center";
-                rowAvatar.style.backgroundRepeat = "no-repeat";
-                rowAvatar.classList.remove("default-avatar");
-                rowAvatar.innerHTML = "";
-            }
+        const formData = new FormData();
+        formData.append('original_pid', editItemRowId.value);
+        formData.append('pid', editCode.value.trim());
+        formData.append('name', editName.value.trim());
+        formData.append('description', editDescription.value.trim());
+        formData.append('cp', parseFloat(editCP.value) || 0);
+        formData.append('wholesale1', parseFloat(editWholesale1.value) || 0);
+        formData.append('wholesale2', parseFloat(editWholesale2.value) || 0);
+        formData.append('retail', parseFloat(editRetail.value) || 0);
+        formData.append('in_stock', parseFloat(editStock.value) || 0);
+        if (pendingImageFile) {
+            formData.append('image', pendingImageFile);
         }
-        editModal.classList.remove("show");
-        tempImageDataUrl = null;
+
+        try {
+            const response = await fetch('api/item_save.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.success) {
+                pendingImageFile = null;
+                editModal.classList.remove("show");
+                loadTabContent('products', document.getElementById('items'));
+            } else {
+                editFormError.textContent = result.error || 'Could not save product.';
+                editFormError.classList.remove('hidden');
+            }
+        } catch (error) {
+            editFormError.textContent = 'Unable to reach the server.';
+            editFormError.classList.remove('hidden');
+        }
     });
 
-    // Execute absolute deletion of row reference item
-    document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
-        if (activeRow) {
-            activeRow.remove();
-            activeRow = null;
+    // Execute deletion against the backend
+    document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+        if (!activeRow) return;
+        const pid = activeRow.getAttribute('data-id');
+        deleteFormError.classList.add('hidden');
+
+        try {
+            const response = await fetch('api/item_delete.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pid })
+            });
+            const result = await response.json();
+            if (result.success) {
+                activeRow.remove();
+                activeRow = null;
+                deleteModal.classList.remove("show");
+            } else {
+                deleteFormError.textContent = result.error || 'Could not delete product.';
+                deleteFormError.classList.remove('hidden');
+            }
+        } catch (error) {
+            deleteFormError.textContent = 'Unable to reach the server.';
+            deleteFormError.classList.remove('hidden');
         }
-        deleteModal.classList.remove("show");
     });
 
 }

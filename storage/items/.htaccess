@@ -1,0 +1,14 @@
+# Uploaded product images are stored here as plain static files.
+# Lock the folder down so an uploaded file can never be executed as a script.
+<IfModule mod_php.c>
+php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+php_flag engine off
+</IfModule>
+
+<FilesMatch "\.(php|phtml|php[3-8]|pht|phar)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes
